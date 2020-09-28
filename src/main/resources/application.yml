@@ -4,3 +4,6 @@ spring:
     username: root
     password: 123456
     type: com.alibaba.druid.pool.DruidDataSource
+
+  thymeleaf:
+    cache: false
