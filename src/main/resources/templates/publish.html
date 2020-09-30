@@ -16,7 +16,7 @@
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                 <span class="sr-only">论坛</span>
             </button>
-            <a class="navbar-brand" href="#">论坛</a>
+            <a class="navbar-brand" href="/index">论坛</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -27,6 +27,9 @@
                 <button type="submit" class="btn btn-default">搜索</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
+                <li th:if="${session.user != null}">
+                    <a href="/publish">提问</a>
+                </li>
                 <li class="dropdown" th:if="${session.user != null}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" th:text="${session.user.getName()}"><span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -48,21 +51,30 @@
             <h2><span class="glyphicon glyphicon-plus" aria-hidden="true">提问</span></h2>
             <hr>
 
-            <form action="">
+            <form action="/publish" method="post">
                 <div class="form-group">
                     <label for="title">问题标题（简要）</label>
-                    <input type="text" class="form-control" id="title" name="title" placeholder="问题标题...">
+                    <input type="text" class="form-control" id="title" name="title" placeholder="问题标题..." th:value="${title}">
                 </div>
                 <div class="form-group">
                     <label for="title">问题补充（必填，详情参照右侧提示）</label>
-                    <textarea class="form-control" rows="12"></textarea>
+                    <textarea class="form-control" rows="12" cols="30" name="description" id="description" th:text="${description}"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="title">问题标签:</label>
-                    <input type="text" class="form-control" id="tag" name="title" placeholder="输入问题标签，以, 分隔">
+                    <input type="text" class="form-control" id="tag" name="tag" placeholder="输入问题标签，以, 分隔" th:value="${tag}">
                 </div>
+                <div class="container-fluid main">
+                    <div class="row">
+                        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                            <div class="alert alert-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" th:text="${error}" th:if="${error != null}"></div>
+                        </div>
+                        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+                            <button type="submit" class="btn btn-success btn-publish">提交</button>
+                        </div>
 
-                <button type="button" class="btn btn-success btn-publish">提交</button>
+                    </div>
+                </div>
             </form>
         </div>
         <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12" >

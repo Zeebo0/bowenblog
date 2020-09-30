@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
+//  第三方登录授权
 @Controller
 public class AuthorizeController {
     @Autowired
@@ -32,7 +32,7 @@ public class AuthorizeController {
     private UserMapper userMapper;
 
     @GetMapping("/callback")
-    public String callback(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletRequest request, HttpServletResponse response) {
+    public String callback(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletResponse response) {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecrect);
@@ -41,21 +41,21 @@ public class AuthorizeController {
         accessTokenDTO.setState(state);
         String accessToken = gitHubProvider.getAccessToken(accessTokenDTO);
         GitHubUser gitHubUser = gitHubProvider.getUser(accessToken);
-        if (gitHubUser != null) {
+        if (gitHubUser != null && gitHubUser.getId() != null) {
             User user = new User();
             String token = UUID.randomUUID().toString();
             user.setAccountId(String.valueOf(gitHubUser.getId()));
             user.setName(gitHubUser.getName());
-            user.setToken(String.valueOf(UUID.randomUUID()));
+            user.setToken(token);
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
+            user.setAvatarUrl(gitHubUser.getAvatarUrl());
             userMapper.insert(user);
             response.addCookie(new Cookie("token", token));
-            request.getSession().setAttribute("user", gitHubUser);
-            return "redirect:index";
+            return "redirect:/index";
         } else {
             //  登录失败，重新登录
-            return "redirect:index";
+            return "redirect:/index";
         }
     }
 }
