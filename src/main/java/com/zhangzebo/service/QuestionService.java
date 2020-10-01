@@ -1,5 +1,6 @@
 package com.zhangzebo.service;
 
+import com.zhangzebo.dto.PageDTO;
 import com.zhangzebo.dto.QuestionDTO;
 import com.zhangzebo.mapper.QuestionMapper;
 import com.zhangzebo.mapper.UserMapper;
@@ -20,9 +21,28 @@ public class QuestionService {
     @Autowired
     private UserMapper userMapper;
 
-    public List<QuestionDTO> list() {
+    //  获取所有的问题
+    public PageDTO list(Integer page, Integer size) {
+        PageDTO pageDTO = new PageDTO();
+        //  获取总共的问题条数
+        Integer totalCount = questionMapper.count();
+        //  计算分页数
+        pageDTO.setPagination(totalCount, page, size);
+
+        //  防止输入超过页面范围的值(尚未完善，发现报错)
+        if (page < 1) {
+            page = 1;
+        }else if (page > pageDTO.getTotalPages()) {
+            page = pageDTO.getTotalPages();
+        }
+
+        Integer offset = size *  (page - 1);
+        //  带头像属性的问题集合
         List<QuestionDTO> questionDTOList = new ArrayList<>();
-        List<Question> questionList = questionMapper.list();
+        //  没有头像属性的问题集合
+        List<Question> questionList = questionMapper.list(offset, size);
+
+
         for (Question question : questionList) {
             User user = userMapper.findById(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
@@ -30,6 +50,8 @@ public class QuestionService {
             questionDTO.setUser(user);
             questionDTOList.add(questionDTO);
         }
-        return questionDTOList;
+        //  将问题列表赋值到页面属性中
+        pageDTO.setQuestions(questionDTOList);
+        return pageDTO;
     }
 }
