@@ -26,3 +26,12 @@ body {
 .profile .section {
     margin-top: 16px;
 }
+
+.mavemblog-menu {
+    color: #9999cc;
+    font-size: 12px;
+}
+
+.jumbotron {
+    margin: 50px;
+}

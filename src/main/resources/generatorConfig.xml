@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--指定连接数据库的JDBC驱动包的位置，指定到本机的完整路径-->
+    <classPathEntry location="D:\mysql-connector-java-8.0.17.jar" />
+
+    <!--配置table表信息内容体，由于生成的注释都是英文，也可以不让他生成-->
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+        
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"></plugin>
+
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/springdb"
+                        userId="root"
+                        password="123456">
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <!--生成model类，targetPackage指定model类的包名，targetProject指定生成的model放在哪个工程下面-->
+        <javaModelGenerator targetPackage="com.zhangzebo.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="false" />
+            <property name="trimStrings" value="false" />
+        </javaModelGenerator>
+
+        <!--生成mybatis的mapper.xml文件，targetPackage指定mapper.xml文件的包名，targetProject指定生成的mapper.xml放在哪个工程下面-->
+        <sqlMapGenerator targetPackage="com.zhangzebo.mapper"  targetProject="src/main/java">
+            <property name="enableSubPackages" value="false" />
+        </sqlMapGenerator>
+
+        <!--生成mybatis的mapper接口类文件，targetPackage指定mapper接口的包名，targetProject指定生成的mapper接口放在哪个工程下面-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.zhangzebo.mapper"  targetProject="src/main/java">
+            <property name="enableSubPackages" value="false" />
+        </javaClientGenerator>
+
+        <!--数据库表明以及对应的Java模型类名-->
+        <table tableName="user" domainObjectName="User" ></table>
+        <table tableName="question" domainObjectName="Question" ></table>
+
+    </context>
+</generatorConfiguration>
