@@ -2,6 +2,7 @@ package com.zhangzebo.service;
 
 import com.zhangzebo.dto.PaginationDTO;
 import com.zhangzebo.dto.QuestionDTO;
+import com.zhangzebo.dto.QuestionQueryDTO;
 import com.zhangzebo.exception.CustomizeErrorCode;
 import com.zhangzebo.exception.CustomizeException;
 import com.zhangzebo.mapper.QuestionMapperExt;
@@ -10,13 +11,16 @@ import com.zhangzebo.mapper.UserMapper;
 import com.zhangzebo.model.Question;
 import com.zhangzebo.model.QuestionExample;
 import com.zhangzebo.model.User;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //  连接Question和User
 @Service
@@ -28,15 +32,22 @@ public class QuestionService {
     private UserMapper userMapper;
 
     @Autowired
-    private QuestionMapperExt questionExtMapper;
+    private QuestionMapperExt questionMapperExt;
 
     //  首页问题列表
-    public PaginationDTO list(Integer page, Integer size) {
+    public PaginationDTO list(Integer page, Integer size, String search) {
+        if (StringUtils.isNotBlank(search)) {
+            String[] tags = StringUtils.split(search, " ");
+            search = Arrays.stream(tags).collect(Collectors.joining("|"));
+        }
+
         //  paginationDTO用来存储分页需要的属性
         PaginationDTO paginationDTO = new PaginationDTO();
         Integer totalPages;
         //  获取总共的问题数
-        Integer totalCount = (int) questionMapper.countByExample(new QuestionExample());
+        QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
+        questionQueryDTO.setSearch(search);
+        Integer totalCount = questionMapperExt.countBySearch(questionQueryDTO);
         //  计算总共分页数
         if (totalCount % size == 0) {
             totalPages = totalCount / size;
@@ -56,7 +67,11 @@ public class QuestionService {
 
         Integer offset = size * (page - 1);
         //  每一页显示的页码集合
-        List<Question> questions = questionMapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offset, size));
+        QuestionExample questionExample = new QuestionExample();
+        questionExample.setOrderByClause("gmt_create desc");
+        questionQueryDTO.setSize(size);
+        questionQueryDTO.setPage(offset);
+        List<Question> questions = questionMapperExt.selectBySearch(questionQueryDTO);
         //  创建一个QuestionDTO集合
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
@@ -70,12 +85,12 @@ public class QuestionService {
             questionDTO.setUser(user);
             questionDTOList.add(questionDTO);
         }
-        paginationDTO.setQuestions(questionDTOList);
+        paginationDTO.setData(questionDTOList);
         return paginationDTO;
     }
 
     //  我的提问问题列表
-    public PaginationDTO list(Integer userId, Integer page, Integer size) {
+    public PaginationDTO list(Long userId, Integer page, Integer size) {
         //  paginationDTO用来存储分页需要的属性
         PaginationDTO paginationDTO = new PaginationDTO();
         Integer totalPages;
@@ -118,11 +133,11 @@ public class QuestionService {
             questionDTO.setUser(user);
             questionDTOList.add(questionDTO);
         }
-        paginationDTO.setQuestions(questionDTOList);
+        paginationDTO.setData(questionDTOList);
         return paginationDTO;
     }
 
-    public QuestionDTO getById(Integer id) {
+    public QuestionDTO getById(Long id) {
         Question question = questionMapper.selectByPrimaryKey(id);
         if (question == null) {
             throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
@@ -140,6 +155,9 @@ public class QuestionService {
             //  第一次创建这个问题
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
+            question.setViewCount(0);
+            question.setLikeCount(0);
+            question.setCommentCount(0);
             questionMapper.insert(question);
         } else {
             //  更新这个问题
@@ -159,10 +177,29 @@ public class QuestionService {
 
     //  浏览次数功能
     //  每次访问这个问题，问题的浏览次数就加一
-    public void incView(Integer id) {
+    public void incView(Long id) {
         Question question = new Question();
         question.setId(id);
         question.setViewCount(1);
-        questionExtMapper.incView(question);
+        questionMapperExt.incView(question);
+    }
+
+    public List<QuestionDTO> selectRelated(QuestionDTO queryDTO) {
+        if (StringUtils.isBlank(queryDTO.getTag())) {
+            return new ArrayList<>();
+        }
+        String[] tags = StringUtils.split(queryDTO.getTag(), ",");
+        String regexpTag = Arrays.stream(tags).collect(Collectors.joining("|"));
+        Question question = new Question();
+        question.setId(queryDTO.getId());
+        question.setTag(regexpTag);
+
+        List<Question> questions = questionMapperExt.selectRelated(question);
+        List<QuestionDTO> questionDTOs = questions.stream().map(q -> {
+            QuestionDTO questionDTO = new QuestionDTO();
+            BeanUtils.copyProperties(q, questionDTO);
+            return questionDTO;
+        }).collect(Collectors.toList());
+        return questionDTOs;
     }
 }

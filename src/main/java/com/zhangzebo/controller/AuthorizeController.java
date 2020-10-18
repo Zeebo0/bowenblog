@@ -2,7 +2,6 @@ package com.zhangzebo.controller;
 
 import com.zhangzebo.dto.AccessTokenDTO;
 import com.zhangzebo.dto.GitHubUser;
-import com.zhangzebo.mapper.UserMapper;
 import com.zhangzebo.model.User;
 import com.zhangzebo.provider.GitHubProvider;
 import com.zhangzebo.service.UserService;
@@ -25,8 +24,8 @@ public class AuthorizeController {
 
     @Value("${github.client.id}")
     private String clientId;
-    @Value("${github.client.secrect}")
-    private String clientSecrect;
+    @Value("${github.client.secret}")
+    private String clientsecret;
     @Value("${github.redirect.uri}")
     private String redirectUri;
 
@@ -39,7 +38,7 @@ public class AuthorizeController {
         //  获取用户信息
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
-        accessTokenDTO.setClient_secret(clientSecrect);
+        accessTokenDTO.setClient_secret(clientsecret);
         accessTokenDTO.setCode(code);
         accessTokenDTO.setRedirect_uri(redirectUri);
         accessTokenDTO.setState(state);

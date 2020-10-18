@@ -1,16 +1,32 @@
 package com.zhangzebo.exception;
 
 public enum CustomizeErrorCode implements ICustomizeErrorCode {
-    QUESTION_NOT_FOUND("你的问题消失了~~~");
+    QUESTION_NOT_FOUND(2001, "你的问题消失了~~~"),
+    TARGET_PARAM_NOT_FOUNT(2002, "未选中任何问题或评论进行回复"),
+    NO_LOGIN(2003, "当前操作需要登录，请登录后重试"),
+    SYS_ERROR(2004, "服务受不了了，待会儿再试试"),
+    TYPE_PARAM_WRONG(2005, "评论类型错误或不存在"),
+    COMMENT_NOT_FOUND(2006, "回复的评论不存在"),
+    CONTENT_IS_EMPTY(2007, "回复内容不能为空"),
+    READ_NOTIFICATION_FAIL(2008, "你怎么能读别人的信息呢？"),
+    NOTIFICATION_NOT_FOUND(2009, "你的回复消失了~~~")
+    ;
 
     private String message;
+    private Integer code;
 
     @Override
     public String getMessage() {
         return message;
     }
 
-    CustomizeErrorCode(String message) {
+    @Override
+    public Integer getCode() {
+        return code;
+    }
+
+    CustomizeErrorCode(Integer code, String message) {
         this.message = message;
+        this.code = code;
     }
 }

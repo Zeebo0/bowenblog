@@ -1,10 +1,11 @@
 package com.zhangzebo.controller;
 
+import com.zhangzebo.cache.TagCache;
 import com.zhangzebo.dto.QuestionDTO;
-import com.zhangzebo.mapper.QuestionMapper;
 import com.zhangzebo.model.Question;
 import com.zhangzebo.model.User;
 import com.zhangzebo.service.QuestionService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,17 +23,20 @@ public class PublishController {
 
     //  完成编辑操作，从数据库中查询问题信息回显到页面
     @GetMapping("/publish/{id}")
-    public String edit(@PathVariable("id") Integer id, Model model) {
+    public String edit(@PathVariable("id") Long id, Model model) {
         QuestionDTO question = questionService.getById(id);
         model.addAttribute("title", question.getTitle());
         model.addAttribute("description", question.getDescription());
         model.addAttribute("tag", question.getTag());
         model.addAttribute("id", question.getId());
+        model.addAttribute("tags", TagCache.get());
+
         return "publish";
     }
 
     @GetMapping("/publish")
-    public String publish () {
+    public String publish (Model model) {
+        model.addAttribute("tags", TagCache.get());
         return "publish";
     }
 
@@ -42,7 +46,7 @@ public class PublishController {
             @RequestParam("title") String title,
             @RequestParam("description") String description,
             @RequestParam("tag") String tag,
-            @RequestParam(value = "id", required = false) Integer id,
+            @RequestParam(value = "id", required = false) Long id,
             HttpServletRequest request,
             Model model
             ) {
@@ -50,6 +54,7 @@ public class PublishController {
         model.addAttribute("title", title);
         model.addAttribute("description", description);
         model.addAttribute("tag", tag);
+        model.addAttribute("tags", TagCache.get());
 
         if (title == null || title.equals("")) {
             model.addAttribute("error", "标题不能为空");
@@ -61,6 +66,11 @@ public class PublishController {
         }
         if (tag == null || tag.equals("")) {
             model.addAttribute("error", "标签不能为空");
+            return "publish";
+        }
+        String invalid = TagCache.filterInvalid(tag);
+        if (StringUtils.isNotBlank(invalid)) {
+            model.addAttribute("error", "输入内容存在非法标签" + invalid);
             return "publish";
         }
         //  从session中获取user

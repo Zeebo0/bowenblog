@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class PaginationDTO {
-    private List<QuestionDTO> questions;    //  问题集合
+public class PaginationDTO<T> {
+    private List<T> data;    //  问题集合，回复集合
     private boolean showPrevious;   //  是否展示上一页按钮
     private boolean showNext;   //  是否展示下一页按钮
     private boolean showFirstPage; //   是否展示首页按钮

@@ -1,8 +1,13 @@
 HELP.md
 target/
+logs/
+
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+# 忽略gitignore文件
+.gitignore
 
 ### STS ###
 .apt_generated
@@ -31,3 +36,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# 忽略属性配置文件
+*.properties

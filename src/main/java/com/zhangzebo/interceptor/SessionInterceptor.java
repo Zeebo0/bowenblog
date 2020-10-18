@@ -3,6 +3,7 @@ package com.zhangzebo.interceptor;
 import com.zhangzebo.mapper.UserMapper;
 import com.zhangzebo.model.User;
 import com.zhangzebo.model.UserExample;
+import com.zhangzebo.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -17,6 +18,10 @@ import java.util.List;
 public class SessionInterceptor implements HandlerInterceptor {
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private NotificationService notificationService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //  获取cookie中的token，去数据库中查询看是否存在，以此来验证是否可以登录成功
@@ -31,6 +36,8 @@ public class SessionInterceptor implements HandlerInterceptor {
                     List<User> users = userMapper.selectByExample(userExample);
                     if (users.size() != 0) { //  如果user不为空，则把user写入到session中
                         request.getSession().setAttribute("user", users.get(0));
+                        Long unreadCount = notificationService.unreadCount(users.get(0).getId());
+                        request.getSession().setAttribute("unreadCount", unreadCount);
                     }
                     break;
                 }
