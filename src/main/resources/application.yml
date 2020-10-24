@@ -1,7 +1,0 @@
-spring:
-
-  thymeleaf:
-    cache: false
-
-  flyway:
-    baseline-on-migrate: true

@@ -3,12 +3,14 @@ package com.zhangzebo.provider;
 import com.alibaba.fastjson.JSON;
 import com.zhangzebo.dto.AccessTokenDTO;
 import com.zhangzebo.dto.GitHubUser;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class GitHubProvider {
     public String getAccessToken(AccessTokenDTO accessTokenDTO) {
         MediaType mediaType = MediaType.get("application/json; charset=utf-8");
