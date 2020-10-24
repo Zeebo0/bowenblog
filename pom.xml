@@ -112,11 +112,11 @@
         </dependency>
 
         <!--flyway-->
-        <dependency>
+        <!--<dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>5.2.4</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>
@@ -142,8 +142,8 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <!--整合mysql和flyway-->
+            <!--<plugin>
+                &lt;!&ndash;整合mysql和flyway&ndash;&gt;
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>5.2.4</version>
@@ -159,7 +159,7 @@
                         <version>8.0.17</version>
                     </dependency>
                 </dependencies>
-            </plugin>
+            </plugin>-->
         </plugins>
 
         <resources>
