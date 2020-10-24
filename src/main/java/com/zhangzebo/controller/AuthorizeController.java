@@ -26,10 +26,10 @@ public class AuthorizeController {
 
     // @Value("${github.client.id}")
     private String clientId = "cefddbb5756bb3e83b2c";
-    @Value("${github.client.secret}")
-    private String clientsecret;
-    @Value("${github.redirect.uri}")
-    private String redirectUri;
+    // @Value("${github.client.secret}")
+    private String clientsecret = "d9b13209aee21471bed8299ceba0c9ff9c3f169a";
+    // @Value("${github.redirect.uri}")
+    private String redirectUri = "http://101.132.135.99/callback";
 
     @Autowired
     private UserService userService;
