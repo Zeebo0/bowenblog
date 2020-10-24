@@ -22,3 +22,22 @@ create table user
     gmt_modified bigint
 );
 ~~~
+
+## 项目部署
+### 依赖
+ - git  
+ - jdk  
+ - maven
+### 步骤
+ - yum update  
+ - yum install git  
+ - mkdir APP 
+ - cd APP/
+ - git clone https://github.com/Zeebo0/bowenblog.git
+ - yum install maven
+ - mvn -v
+ - mvn clean compile package
+ - cp src/main/resources/application.properties src/main/resources/application-production.properties
+ - vim src/main/resources/application-production.properties
+ - mvn package
+ 
